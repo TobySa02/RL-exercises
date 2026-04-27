@@ -193,7 +193,7 @@ class MarsRover(gym.Env):
             state -= 1
         elif action == 1:
             state += 1
-        state = np.clip(state, 0, len(self.states) - 1)
+        state = int(np.clip(state, 0, len(self.states) - 1))
 
         return state
 
