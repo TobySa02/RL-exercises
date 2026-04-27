@@ -230,10 +230,7 @@ class MarsRover(gym.Env):
         # and the transition probabilities P.
         for state in S:
             for action in A:
-                print(state, action)
                 T[state, action, self.get_next_state(state, action)] = P[state, action]
-        # print(T)
-        print(T[2, 1, 3])
         return T
 
     def render(self, mode: str = "human"):
