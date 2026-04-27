@@ -65,13 +65,13 @@ class ValueIteration(AbstractAgent):
             return
 
         # TODO: Call value_iteration() with the MDP components
-        V_opt, pi_opt = None, None  # placeholder
+        V_opt, pi_opt = value_iteration(T=self.T, R_sa=self.R_sa, gamma=self.gamma)
 
         self.V = V_opt
         self.pi = pi_opt
         printr("Converged V:", self.V)
         printr("Derived policy π:", self.pi)
-        # self.policy_fitted = True # TODO: uncomment this after implementation
+        self.policy_fitted = True
 
     def predict_action(
         self,
@@ -84,7 +84,7 @@ class ValueIteration(AbstractAgent):
             self.update_agent()
 
         # TODO: Return action from learned policy
-        raise NotImplementedError("predict_action() is not implemented.")
+        return self.pi[observation], info
 
 
 def value_iteration(
@@ -124,11 +124,26 @@ def value_iteration(
     """
     n_states, n_actions = R_sa.shape
     V = np.zeros(n_states, dtype=float)
-    # rng = np.random.default_rng(seed)  uncomment this
+    rng = np.random.default_rng(seed)
     pi = None
 
     # TODO: update V using the Q values until convergence
+    k = 1
+    new_V = np.zeros(n_states)
+    Q = np.zeros((n_states, n_actions))
+    while k == 1 or np.max(np.abs(new_V - V)) >= epsilon:
+        V = new_V
+        for s in range(n_states):
+            for a in range(n_actions):
+                Q[s, a] = R_sa[s, a] + gamma * np.sum(T[s, a, :] * V)
+
+            new_V[s] = np.max(Q[s])
+        k += 1
 
     # TODO: Extract the greedy policy from V and update pi
+    pi = np.zeros(n_states, dtype=int)
+    for s in range(n_states):
+        valid_actions = np.where(Q[s] == np.max(Q[s]))[0]
+        pi[s] = rng.choice(valid_actions)
 
     return V, pi
