@@ -150,7 +150,7 @@ class TDAgent(AbstractAgent):
         # Use a value of 0. for terminal states and
         # update the new Q value in the Q table of this class.
         # Return the new Q value --currently always returns 0.0
-        print(done)
+        # print(done)
         if done:
             next_Q = 0
         else:
@@ -197,4 +197,14 @@ class TDAgent(AbstractAgent):
         # Q learning update rule
         # TODO: Implement the Q-Learning update rule here.
 
-        return 0.0
+        if done:
+            next_Q = 0
+        else:
+            next_Q = np.max(self.Q[next_state])
+
+        new_Q = self.Q[state][action] + self.alpha * (
+            reward + self.gamma * next_Q - self.Q[state][action]
+        )
+        self.Q[state][action] = new_Q
+
+        return new_Q
