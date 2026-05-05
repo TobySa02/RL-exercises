@@ -107,7 +107,7 @@ class TDAgent(AbstractAgent):
         state, action, reward, next_state, done, _ = batch[0]
         if self.algorithm == "sarsa":
             # TODO: Get the next action for the lookahead in SARSA using the policy of this agent.
-            next_action = 0
+            next_action = self.policy(self.Q, next_state, evaluate=False)
             return self.SARSA(state, action, reward, next_state, next_action, done)
         else:
             return self.Q_Learning(state, action, reward, next_state, done)
@@ -150,8 +150,19 @@ class TDAgent(AbstractAgent):
         # Use a value of 0. for terminal states and
         # update the new Q value in the Q table of this class.
         # Return the new Q value --currently always returns 0.0
+        print(done)
+        if done:
+            next_Q = 0
+        else:
+            next_Q = self.Q[next_state][next_action]
+        new_Q = self.Q[state][action] + self.alpha * (
+            reward + self.gamma * next_Q - self.Q[state][action]
+        )
+        self.Q[state][action] = new_Q
 
-        return 0.0
+        # print(f"Old Q: {self.Q[state][action]},  New Q: {new_Q}")
+
+        return new_Q
 
     def Q_Learning(
         self,
